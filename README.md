@@ -1,9 +1,17 @@
 # PicoUrl
-A helper to extract the streaming URL from a YouTube video
+Create tiny shareable URLs that can be parsed back into the original URLs
 
 [![Build Status](https://travis-ci.org/Commit451/PicoUrl.svg?branch=master)](https://travis-ci.org/Commit451/PicoUrl)
 [![](https://jitpack.io/v/Commit451/PicoUrl.svg)](https://jitpack.io/#Commit451/PicoUrl)
 
+Who has time to create a backend tiny url parser? Why not leverage one that already exists, such as [TinyUrl](http://tinyurl.com/). The only problem is, a lot of times, you probably want to allow for deep links into your app using tiny urls, but for the best of reasons, do not want to register for all urls starting with `http://tinyurl.com`
+
+The solution is one that is interesting. This library takes a url that you would want to shorten, such as `http://commit451.github.io/linkipedia?query=hi&source=twitter&unicorns=true` and turn it into something like `http://commit451.com/j6zlwzh`, which makes far more sense to register deep links for.
+
+# Usage
+```java
+//TODO
+```
 
 License
 --------
