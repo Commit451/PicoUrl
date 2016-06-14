@@ -2,8 +2,6 @@ package com.commit451.picourl;
 
 import android.net.Uri;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
@@ -12,8 +10,7 @@ import org.robolectric.shadows.ShadowLog;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.ResponseBody;
-import retrofit2.Response;
+import rx.observers.TestSubscriber;
 
 /**
  * To work on unit tests, switch the Test Artifact in the Build Variants view.
@@ -24,20 +21,24 @@ public class ShareUrlGeneratorTest {
 
     @Test
     public void shareUrlGeneration() throws Exception {
-        OkHttpClient client = new OkHttpClient();
-        String originalUrl = "http://jawnnypoo.github.io/";
-        Response<ResponseBody> generatedLink = PicoUrl.instance().generateLink(originalUrl).execute();
-        Assert.assertTrue(generatedLink.isSuccessful());
-        String tinyUrl = generatedLink.body().string();
+        String baseUrl = "http://jawnnypoo.github.io";
+        PicoUrl picoUrl = PicoUrl.create(baseUrl, new OkHttpClient.Builder());
 
-        Request followRequest = new Request.Builder()
-                .url(tinyUrl)
-                .build();
-
-
-        okhttp3.Response followResponse = client.newCall(followRequest).execute();
-
-        Assert.assertEquals(originalUrl, followResponse.request().url().toString());
+        String shareUrl = "http://jawnnypoo.github.io/?arg1=hi&arg2=there";
+        final TestSubscriber<String> subscriber = new TestSubscriber<>();
+        picoUrl.generate(shareUrl).subscribe(subscriber);
+        subscriber.awaitTerminalEvent();
+        subscriber.assertCompleted();
+        //Predetermined to be the generation tinyurl will do
+        String shareUrlEnd = "gtffxxo";
+        subscriber.assertValue(baseUrl + "?tinyUrl=" + shareUrlEnd);
+        //The parsed url should == the generated url in the end, otherwise this did not do its job
+        String generatedUrl = subscriber.getOnNextEvents().get(0);
+        final TestSubscriber<String> parseSubscriber = new TestSubscriber<>();
+        picoUrl.parse(generatedUrl).subscribe(parseSubscriber);
+        parseSubscriber.awaitTerminalEvent();
+        parseSubscriber.assertCompleted();
+        parseSubscriber.assertValue(shareUrl);
     }
 
     @Test

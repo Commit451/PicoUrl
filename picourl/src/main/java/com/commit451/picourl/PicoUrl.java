@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.ResponseBody;
 import retrofit2.Response;
 import rx.Observable;
 import rx.Subscriber;
@@ -76,8 +77,8 @@ public class PicoUrl {
     }
 
     private String generateInternal(final String url) throws IOException {
-        Response<String> tinyUrlResponse = mTinyUrl.generateLink(url).execute();
-        String tinyUrl = tinyUrlResponse.body();
+        Response<ResponseBody> tinyUrlResponse = mTinyUrl.generateLink(url).execute();
+        String tinyUrl = tinyUrlResponse.body().string();
         //Get the unique string at the end of the tinyurl
         String tinyUrlPath = tinyUrl.split(".com/")[1];
         //Builds our url like so:
