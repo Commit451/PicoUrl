@@ -1,6 +1,7 @@
 package com.commit451.picourl;
 
 import android.net.Uri;
+import android.support.annotation.Nullable;
 
 import java.io.IOException;
 
@@ -18,7 +19,13 @@ public class PicoUrl {
 
     private static final String QUERY_PARAM_TINY_URL = "tinyUrl";
 
-    public static PicoUrl create(String baseUrl, OkHttpClient.Builder okhttpBuilder) {
+    public static PicoUrl create(String baseUrl) {
+        return create(baseUrl, null);
+    }
+    public static PicoUrl create(String baseUrl, @Nullable OkHttpClient.Builder okhttpBuilder) {
+        if (okhttpBuilder == null) {
+            okhttpBuilder = new OkHttpClient.Builder();
+        }
         OkHttpClient client = okhttpBuilder.build();
         PicoUrl picoUrl = new PicoUrl();
         picoUrl.mBaseUrl = baseUrl;
@@ -41,12 +48,12 @@ public class PicoUrl {
      * @param url the url to shorten.
      * @return an observable with the shorted url
      */
-    public Observable<String> generate(final String url) {
-        return Observable.create(new Observable.OnSubscribe<String>() {
+    public Observable<Uri> generate(final Uri url) {
+        return Observable.create(new Observable.OnSubscribe<Uri>() {
             @Override
-            public void call(Subscriber<? super String> subscriber) {
+            public void call(Subscriber<? super Uri> subscriber) {
                 try {
-                    String generatedUrl = generateInternal(url);
+                    Uri generatedUrl = generateInternal(url);
                     subscriber.onNext(generatedUrl);
                     subscriber.onCompleted();
                 } catch (IOException e) {
@@ -58,15 +65,15 @@ public class PicoUrl {
 
     /**
      * Parse a shorted url
-     * @param url the url that was shorted by the {@link #generate(String)} method
-     * @return the original url that was passed to the {@link #generate(String)} method
+     * @param url the url that was shorted by the {@link #generate(Uri)} method
+     * @return the original url that was passed to the {@link #generate(Uri)} method
      */
-    public Observable<String> parse(final String url) {
-        return Observable.create(new Observable.OnSubscribe<String>() {
+    public Observable<Uri> parse(final Uri url) {
+        return Observable.create(new Observable.OnSubscribe<Uri>() {
             @Override
-            public void call(Subscriber<? super String> subscriber) {
+            public void call(Subscriber<? super Uri> subscriber) {
                 try {
-                    String parsedUrl = parseInternal(url);
+                    Uri parsedUrl = parseInternal(url);
                     subscriber.onNext(parsedUrl);
                     subscriber.onCompleted();
                 } catch (Exception e) {
@@ -76,8 +83,8 @@ public class PicoUrl {
         });
     }
 
-    private String generateInternal(final String url) throws IOException {
-        Response<ResponseBody> tinyUrlResponse = mTinyUrl.generateLink(url).execute();
+    private Uri generateInternal(final Uri url) throws IOException {
+        Response<ResponseBody> tinyUrlResponse = mTinyUrl.generateLink(url.toString()).execute();
         String tinyUrl = tinyUrlResponse.body().string();
         //Get the unique string at the end of the tinyurl
         String tinyUrlPath = tinyUrl.split(".com/")[1];
@@ -85,11 +92,11 @@ public class PicoUrl {
         //http://yourdomain.com&tinyurl=asdfwe
         return Uri.parse(mBaseUrl).buildUpon()
                 .appendQueryParameter(QUERY_PARAM_TINY_URL, tinyUrlPath)
-                .toString();
+                .build();
     }
 
-    private String parseInternal(String url) throws Exception {
-        String tinyUrlPath = Uri.parse(url).getQueryParameter(QUERY_PARAM_TINY_URL);
+    private Uri parseInternal(Uri url) throws Exception {
+        String tinyUrlPath = url.getQueryParameter(QUERY_PARAM_TINY_URL);
         if (tinyUrlPath == null) {
             throw new IllegalArgumentException("Passed url does not contain a tiny url param");
         }
@@ -108,6 +115,6 @@ public class PicoUrl {
         //We have to do this now, since really we had our urls as params
         final String parsedUrl = Uri.decode(followedUrl);
         response.body().close();
-        return parsedUrl;
+        return Uri.parse(parsedUrl);
     }
 }

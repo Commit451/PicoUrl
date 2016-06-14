@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">TinyShareUrls</string>
+    <string name="app_name">PicoUrl</string>
+    <string name="share_base_url">picourl.commit451.com</string>
 </resources>

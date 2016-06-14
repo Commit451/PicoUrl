@@ -24,17 +24,17 @@ public class ShareUrlGeneratorTest {
         String baseUrl = "http://jawnnypoo.github.io";
         PicoUrl picoUrl = PicoUrl.create(baseUrl, new OkHttpClient.Builder());
 
-        String shareUrl = "http://jawnnypoo.github.io/?arg1=hi&arg2=there";
-        final TestSubscriber<String> subscriber = new TestSubscriber<>();
+        Uri shareUrl = Uri.parse("http://jawnnypoo.github.io/?arg1=hi&arg2=there");
+        final TestSubscriber<Uri> subscriber = new TestSubscriber<>();
         picoUrl.generate(shareUrl).subscribe(subscriber);
         subscriber.awaitTerminalEvent();
         subscriber.assertCompleted();
         //Predetermined to be the generation tinyurl will do
         String shareUrlEnd = "gtffxxo";
-        subscriber.assertValue(baseUrl + "?tinyUrl=" + shareUrlEnd);
+        subscriber.assertValue(Uri.parse(baseUrl + "?tinyUrl=" + shareUrlEnd));
         //The parsed url should == the generated url in the end, otherwise this did not do its job
-        String generatedUrl = subscriber.getOnNextEvents().get(0);
-        final TestSubscriber<String> parseSubscriber = new TestSubscriber<>();
+        Uri generatedUrl = subscriber.getOnNextEvents().get(0);
+        final TestSubscriber<Uri> parseSubscriber = new TestSubscriber<>();
         picoUrl.parse(generatedUrl).subscribe(parseSubscriber);
         parseSubscriber.awaitTerminalEvent();
         parseSubscriber.assertCompleted();
