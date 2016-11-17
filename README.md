@@ -4,9 +4,9 @@ Create tiny shareable URLs that can be parsed back into the original URLs
 [![Build Status](https://travis-ci.org/Commit451/PicoUrl.svg?branch=master)](https://travis-ci.org/Commit451/PicoUrl)
 [![](https://jitpack.io/v/Commit451/PicoUrl.svg)](https://jitpack.io/#Commit451/PicoUrl)
 
-Who has time to create a backend tiny url parser? Why not leverage one that already exists, such as [TinyUrl](http://tinyurl.com/). The only problem is, a lot of times, you probably want to allow for deep links into your app using tiny urls, but for the best of reasons, do not want to register for all urls starting with `http://tinyurl.com`
+Who has time to create a backend for a URL shortener? Why not leverage one that already exists, such as [TinyUrl](http://tinyurl.com/). The only problem is, a lot of times, you probably want to allow for deep links into your app using tiny urls, but for the best of reasons, do not want to register for all urls starting with `http://tinyurl.com`
 
-The solution? PicoUrl. This library takes a url that you would want to shorten, such as
+The solution? PicoUrl. This library takes a URL that you would want to shorten, such as
 `http://commit451.github.io/linkipedia?query=hi&source=twitter&unicorns=true`
 and turn it into
 `http://commit451.com?tinyUrl=j6zlwzh`
@@ -70,6 +70,7 @@ picoUrl.parse(shortenedUrl).subscribeOn(Schedulers.newThread())
 
 # About
 This library was created for [Linkipedia](https://play.google.com/store/apps/details?id=com.commit451.linkipedia), an app where you try to beat your friends from one Wikipedia page to another.
+
 It is made possible by using the following libraries:
 - RxJava
 - Retrofit
