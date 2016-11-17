@@ -8,10 +8,9 @@ import retrofit2.Retrofit;
 /**
  * Creates a usable {@link TinyUrl} instance
  */
-public class TinyUrlFactory {
+class TinyUrlFactory {
 
-
-    public static TinyUrl create(@Nullable OkHttpClient okHttpClient) {
+    static TinyUrl create(@Nullable OkHttpClient okHttpClient) {
         if (okHttpClient == null) {
             okHttpClient = new OkHttpClient();
         }

@@ -8,7 +8,7 @@ import retrofit2.http.Query;
 /**
  * Url so tiny!
  */
-public interface TinyUrl {
+interface TinyUrl {
 
     String BASE_URL = "http://tinyurl.com/";
 

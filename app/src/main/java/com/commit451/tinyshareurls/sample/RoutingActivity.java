@@ -38,7 +38,12 @@ public class RoutingActivity extends Activity {
 
                         @Override
                         public void onNext(Uri url) {
-                            Toast.makeText(RoutingActivity.this, "Original url:\n" + url, Toast.LENGTH_SHORT).show();
+                            String time = url.getQueryParameter("time");
+                            Toast.makeText(RoutingActivity.this, "Original url:\n" + url + ". Generated at " + time, Toast.LENGTH_LONG)
+                                    .show();
+                            //normally you would route here, or do whatever else you need to with
+                            //that original url
+                            finish();
                         }
                     });
         }

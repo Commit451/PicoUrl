@@ -21,7 +21,9 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         sInstance = this;
-        mPicoUrl = PicoUrl.create(getString(R.string.share_base_url));
+        mPicoUrl = new PicoUrl.Builder()
+                .baseUrl("http://" + getString(R.string.share_base_url))
+                .build();
     }
 
     /**

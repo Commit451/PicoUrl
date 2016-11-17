@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Toast;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -24,8 +25,6 @@ public class MainActivity extends AppCompatActivity {
                 share();
             }
         });
-
-
     }
 
     private void share() {
@@ -49,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onNext(Uri url) {
+                        Toast.makeText(MainActivity.this, "Shortened Url: " + url.toString(), Toast.LENGTH_SHORT)
+                                .show();
                         //Normally you would share this link. But we will test it immediately
                         Intent intent = new Intent(Intent.ACTION_VIEW, url);
                         startActivity(intent);

@@ -13,7 +13,7 @@ class Util {
      * @return the desired url, or null if not found
      */
     @Nullable
-    public static String backpedalRedirectsTillYouDie(okhttp3.Response response, String expectedBaseUrl) {
+    static String backpedalRedirectsTillYouDie(okhttp3.Response response, String expectedBaseUrl) {
         while(response != null) {
             String url = response.request().url().toString();
             if (url.contains(expectedBaseUrl)) {
