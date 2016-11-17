@@ -25,6 +25,9 @@ public class PicoUrl {
         String param;
         OkHttpClient client;
 
+        /**
+         * Create a new Builder
+         */
         public Builder() {
         }
 

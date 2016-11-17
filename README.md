@@ -6,7 +6,11 @@ Create tiny shareable URLs that can be parsed back into the original URLs
 
 Who has time to create a backend tiny url parser? Why not leverage one that already exists, such as [TinyUrl](http://tinyurl.com/). The only problem is, a lot of times, you probably want to allow for deep links into your app using tiny urls, but for the best of reasons, do not want to register for all urls starting with `http://tinyurl.com`
 
-The solution is one that is interesting. This library takes a url that you would want to shorten, such as `http://commit451.github.io/linkipedia?query=hi&source=twitter&unicorns=true` and turn it into something like `http://commit451.com/j6zlwzh`, which makes far more sense to register deep links for.
+The solution? PicoUrl. This library takes a url that you would want to shorten, such as
+`http://commit451.github.io/linkipedia?query=hi&source=twitter&unicorns=true`
+and turn it into
+`http://commit451.com?tinyUrl=j6zlwzh`
+which makes far more sense to register deep links for.
 
 # Usage
 ```java
@@ -58,13 +62,20 @@ picoUrl.parse(shortenedUrl).subscribeOn(Schedulers.newThread())
 
                         @Override
                         public void onNext(Uri url) {
-                            String id = url.
+                            String id = url.getQueryParameter("id");
+                            //Do what you need to with the values
                         }
                     });
 ```
 
 # About
 This library was created for [Linkipedia](https://play.google.com/store/apps/details?id=com.commit451.linkipedia), an app where you try to beat your friends from one Wikipedia page to another.
+It is made possible by using the following libraries:
+- RxJava
+- Retrofit
+- OkHttp
+
+It is also made possibly by using the API provided by [tinyurl](http://tinyurl.com/). Please read their [terms of service](http://tinyurl.com/#terms) before using this library.
 
 License
 --------
