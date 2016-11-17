@@ -22,7 +22,9 @@ public class ShareUrlGeneratorTest {
     @Test
     public void shareUrlGeneration() throws Exception {
         String baseUrl = "http://jawnnypoo.github.io";
-        PicoUrl picoUrl = PicoUrl.create(baseUrl, new OkHttpClient.Builder());
+        PicoUrl picoUrl = new PicoUrl.Builder()
+                .baseUrl(baseUrl)
+                .build();
 
         Uri shareUrl = Uri.parse("http://jawnnypoo.github.io/?arg1=hi&arg2=there");
         final TestSubscriber<Uri> subscriber = new TestSubscriber<>();
