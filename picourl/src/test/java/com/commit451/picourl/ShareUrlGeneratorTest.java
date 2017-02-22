@@ -2,6 +2,7 @@ package com.commit451.picourl;
 
 import android.net.Uri;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -10,7 +11,6 @@ import org.robolectric.shadows.ShadowLog;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import rx.observers.TestSubscriber;
 
 /**
  * To work on unit tests, switch the Test Artifact in the Build Variants view.
@@ -27,20 +27,14 @@ public class ShareUrlGeneratorTest {
                 .build();
 
         Uri shareUrl = Uri.parse("http://jawnnypoo.github.io/?arg1=hi&arg2=there");
-        final TestSubscriber<Uri> subscriber = new TestSubscriber<>();
-        picoUrl.generate(shareUrl).subscribe(subscriber);
-        subscriber.awaitTerminalEvent();
-        subscriber.assertCompleted();
+        Uri testUri = picoUrl.generate(shareUrl).blockingGet();
         //Predetermined to be the generation tinyurl will do
         String shareUrlEnd = "gtffxxo";
-        subscriber.assertValue(Uri.parse(baseUrl + "?tinyUrl=" + shareUrlEnd));
+        Uri actualUri = Uri.parse(baseUrl + "?tinyUrl=" + shareUrlEnd);
+        Assert.assertEquals(actualUri, testUri);
         //The parsed url should == the generated url in the end, otherwise this did not do its job
-        Uri generatedUrl = subscriber.getOnNextEvents().get(0);
-        final TestSubscriber<Uri> parseSubscriber = new TestSubscriber<>();
-        picoUrl.parse(generatedUrl).subscribe(parseSubscriber);
-        parseSubscriber.awaitTerminalEvent();
-        parseSubscriber.assertCompleted();
-        parseSubscriber.assertValue(shareUrl);
+        Uri parsedUri = picoUrl.parse(testUri).blockingGet();
+        Assert.assertEquals(shareUrl, parsedUri);
     }
 
     @Test
