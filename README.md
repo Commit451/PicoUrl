@@ -29,9 +29,9 @@ shareUrl = shareUrl.buildUpon()
 //into http://mysite.com?tinyUrl=j71a1h
 picoUrl.generate(shareUrl).subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Uri>() {
+                .subscribe(new SingleObserver<Uri>() {
                     @Override
-                    public void onCompleted() {
+                    public void onSubscribe(Disposable d) {
                     }
 
                     @Override
@@ -41,7 +41,7 @@ picoUrl.generate(shareUrl).subscribeOn(Schedulers.newThread())
                     }
 
                     @Override
-                    public void onNext(Uri url) {
+                    public void onSuccess(Uri url) {
                         //Send the link to the other user, or post it on the internet for others to click!
                     }
                 });
@@ -49,9 +49,9 @@ picoUrl.generate(shareUrl).subscribeOn(Schedulers.newThread())
 //When receiving the shortened url:
 picoUrl.parse(shortenedUrl).subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Subscriber<Uri>() {
+                    .subscribe(new SingleObserver<Uri>() {
                         @Override
-                        public void onCompleted() {
+                        public void onSubscribe(Disposable d) {
                         }
 
                         @Override
@@ -61,7 +61,7 @@ picoUrl.parse(shortenedUrl).subscribeOn(Schedulers.newThread())
                         }
 
                         @Override
-                        public void onNext(Uri url) {
+                        public void onSuccess(Uri url) {
                             String id = url.getQueryParameter("id");
                             //Do what you need to with the values
                         }
@@ -81,7 +81,7 @@ It is also made possibly by using the API provided by [tinyurl](http://tinyurl.c
 License
 --------
 
-    Copyright 2016 Commit 451
+    Copyright 2017 Commit 451
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

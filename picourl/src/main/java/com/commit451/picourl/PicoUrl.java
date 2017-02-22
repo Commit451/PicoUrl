@@ -2,18 +2,21 @@ package com.commit451.picourl;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
 
+import io.reactivex.Single;
+import io.reactivex.SingleSource;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
-import rx.Observable;
-import rx.Subscriber;
 
 /**
- * Shorten your urls, powered by http://tinyurl.com/. Use the {@link Builder} to create an instance
+ * Shorten your urls, powered by http://tinyurl.com/. Use the {@link Builder}
+ * to create an instance.
  */
 public class PicoUrl {
 
@@ -21,9 +24,9 @@ public class PicoUrl {
      * Build your {@link PicoUrl} instance
      */
     public static class Builder {
-        String baseUrl;
-        String param;
-        OkHttpClient client;
+        private String baseUrl;
+        private String param;
+        private OkHttpClient client;
 
         /**
          * Create a new Builder
@@ -36,7 +39,7 @@ public class PicoUrl {
          * @param baseUrl the base url
          * @return builder
          */
-        public Builder baseUrl(String baseUrl) {
+        public Builder baseUrl(@NonNull String baseUrl) {
             this.baseUrl = baseUrl;
             return this;
         }
@@ -47,7 +50,7 @@ public class PicoUrl {
          * @param client the client
          * @return builder
          */
-        public Builder client(OkHttpClient client) {
+        public Builder client(@Nullable OkHttpClient client) {
             this.client = client;
             return this;
         }
@@ -57,7 +60,7 @@ public class PicoUrl {
          * @param param the key that will be used for the shortened url
          * @return builder
          */
-        public Builder tinyQueryParam(String param) {
+        public Builder tinyQueryParam(@Nullable String param) {
             this.param = param;
             return this;
         }
@@ -66,6 +69,7 @@ public class PicoUrl {
          * Build the {@link PicoUrl} instance
          * @return the built instance
          */
+        @NonNull
         public PicoUrl build() {
             if (baseUrl == null) {
                 throw new IllegalStateException("You need to specify a base url");
@@ -99,17 +103,12 @@ public class PicoUrl {
      * @param url the url to shorten.
      * @return an observable with the shorted url
      */
-    public Observable<Uri> generate(@NonNull final Uri url) {
-        return Observable.create(new Observable.OnSubscribe<Uri>() {
+    public Single<Uri> generate(@NonNull final Uri url) {
+        return Single.defer(new Callable<SingleSource<? extends Uri>>() {
             @Override
-            public void call(Subscriber<? super Uri> subscriber) {
-                try {
-                    Uri generatedUrl = generateInternal(url);
-                    subscriber.onNext(generatedUrl);
-                    subscriber.onCompleted();
-                } catch (IOException e) {
-                    subscriber.onError(e);
-                }
+            public SingleSource<? extends Uri> call() throws Exception {
+                Uri generatedUrl = generateInternal(url);
+                return Single.just(generatedUrl);
             }
         });
     }
@@ -119,17 +118,11 @@ public class PicoUrl {
      * @param url the url that was shorted by the {@link #generate(Uri)} method
      * @return the original url that was passed to the {@link #generate(Uri)} method
      */
-    public Observable<Uri> parse(@NonNull final Uri url) {
-        return Observable.create(new Observable.OnSubscribe<Uri>() {
+    public Single<Uri> parse(@NonNull final Uri url) {
+        return Single.defer(new Callable<SingleSource<? extends Uri>>() {
             @Override
-            public void call(Subscriber<? super Uri> subscriber) {
-                try {
-                    Uri parsedUrl = parseInternal(url);
-                    subscriber.onNext(parsedUrl);
-                    subscriber.onCompleted();
-                } catch (Exception e) {
-                    subscriber.onError(e);
-                }
+            public SingleSource<? extends Uri> call() throws Exception {
+                return Single.just(parseInternal(url));
             }
         });
     }
@@ -161,7 +154,7 @@ public class PicoUrl {
         if (followedUrl == null) {
             response.body().close();
             //Throw some more meaningful error
-            throw new Exception("The url passed does not ever match your baseUrl");
+            throw new RedirectNotFoundException();
         }
         //We have to do this now, since really we had our urls as params
         final String parsedUrl = Uri.decode(followedUrl);

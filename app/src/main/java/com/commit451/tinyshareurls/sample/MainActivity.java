@@ -7,10 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,12 +34,13 @@ public class MainActivity extends AppCompatActivity {
         shareUrl = shareUrl.buildUpon()
                 .appendQueryParameter("time", String.valueOf(System.currentTimeMillis()))
                 .build();
-        Observable<Uri> observable = App.instance().getPicoUrl().generate(shareUrl);
+        Single<Uri> observable = App.instance().getPicoUrl().generate(shareUrl);
         observable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Uri>() {
+                .subscribe(new SingleObserver<Uri>() {
+
                     @Override
-                    public void onCompleted() {
+                    public void onSubscribe(Disposable d) {
                     }
 
                     @Override
@@ -47,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onNext(Uri url) {
+                    public void onSuccess(Uri url) {
                         Toast.makeText(MainActivity.this, "Shortened Url: " + url.toString(), Toast.LENGTH_SHORT)
                                 .show();
                         //Normally you would share this link. But we will test it immediately
