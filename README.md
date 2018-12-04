@@ -1,4 +1,6 @@
 # PicoUrl
+### Deprecated: Use [Firebase Dynamic Links](https://firebase.google.com/docs/dynamic-links/) instead.
+
 Create tiny shareable URLs that can be parsed back into the original URLs
 
 [![Build Status](https://travis-ci.org/Commit451/PicoUrl.svg?branch=master)](https://travis-ci.org/Commit451/PicoUrl)
