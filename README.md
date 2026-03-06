@@ -1,84 +1,46 @@
 # PicoUrl
-### Deprecated: Use [Firebase Dynamic Links](https://firebase.google.com/docs/dynamic-links/) instead.
 
-Create tiny shareable URLs that can be parsed back into the original URLs
+Create tiny shareable URLs that can be parsed back into the original URLs.
 
-[![Build Status](https://travis-ci.org/Commit451/PicoUrl.svg?branch=master)](https://travis-ci.org/Commit451/PicoUrl)
-[![](https://jitpack.io/v/Commit451/PicoUrl.svg)](https://jitpack.io/#Commit451/PicoUrl)
+This is now a **pure Kotlin/JVM** library and uses **Ktor client + CIO**.
 
-Who has time to create a backend for a URL shortener? Why not leverage one that already exists, such as [TinyUrl](http://tinyurl.com/). The only problem is, a lot of times, you probably want to allow for deep links into your app using tiny urls, but for the best of reasons, do not want to register for all urls starting with `http://tinyurl.com`
+## Dependency
 
-The solution? PicoUrl. This library takes a URL that you would want to shorten, such as
-`http://commit451.github.io/linkipedia?query=hi&source=twitter&unicorns=true`
-and turn it into
-`http://commit451.com?tinyUrl=j6zlwzh`
-which makes far more sense to register deep links for.
-
-# Usage
-```java
-//Initialize an instance of PicoUrl
-picoUrl = new PicoUrl.Builder()
-                .baseUrl("http://mysite.com")
-                .build();
-//Create a url that your app understands and can parse:
-Uri shareUrl = Uri.parse("http://mysite.com");
-shareUrl = shareUrl.buildUpon()
-        .appendQueryParameter("id", someId))
-        .appendQueryParameter("referer", userId))
-        .appendQueryParameter("unicorns", "true"))
-        .build();
-//Turns http://mysite.com?id=someId&referer=userId&unicorns=true
-//into http://mysite.com?tinyUrl=j71a1h
-picoUrl.generate(shareUrl).subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<Uri>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        //Alert your user!
-                    }
-
-                    @Override
-                    public void onSuccess(Uri url) {
-                        //Send the link to the other user, or post it on the internet for others to click!
-                    }
-                });
-
-//When receiving the shortened url:
-picoUrl.parse(shortenedUrl).subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new SingleObserver<Uri>() {
-                        @Override
-                        public void onSubscribe(Disposable d) {
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            e.printStackTrace();
-                            //Alert your user!
-                        }
-
-                        @Override
-                        public void onSuccess(Uri url) {
-                            String id = url.getQueryParameter("id");
-                            //Do what you need to with the values
-                        }
-                    });
+```kotlin
+dependencies {
+    implementation("com.commit451:picourl:latest.version.here")
+}
 ```
 
-# About
-This library was created for [Linkipedia](https://play.google.com/store/apps/details?id=com.commit451.linkipedia), an app where you try to beat your friends from one Wikipedia page to another.
+## Usage
 
-It is made possible by using the following libraries:
-- RxJava
-- Retrofit
-- OkHttp
+```kotlin
+import com.commit451.picourl.PicoUrl
 
-It is also made possibly by using the API provided by [tinyurl](http://tinyurl.com/). Please read their [terms of service](http://tinyurl.com/#terms) before using this library.
+suspend fun demo() {
+    val picoUrl = PicoUrl.Builder()
+        .baseUrl("https://mysite.com")
+        .build()
+
+    val shareUrl = "https://mysite.com?id=someId&referer=userId&unicorns=true"
+
+    // Turns this into something like: https://mysite.com?tinyUrl=j71a1h
+    val shortened = picoUrl.generate(shareUrl)
+
+    // Parse it back to the original URL
+    val parsed = picoUrl.parse(shortened)
+
+    println(shortened)
+    println(parsed)
+
+    picoUrl.close()
+}
+```
+
+## About
+
+This library is powered by [tinyurl](https://tinyurl.com/).
+Please read their [terms of service](https://tinyurl.com/app/terms).
 
 License
 --------
