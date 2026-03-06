@@ -1,5 +1,7 @@
 # PicoUrl
 
+[![Build](https://github.com/Commit451/PicoUrl/actions/workflows/ci.yml/badge.svg)](https://github.com/Commit451/PicoUrl/actions/workflows/ci.yml) [![Maven Central](https://img.shields.io/maven-central/v/com.commit451/picourl.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/com.commit451/picourl)
+
 Create tiny shareable URLs that can be parsed back into the original URLs.
 
 This is now a **pure Kotlin/JVM** library and uses **Ktor client + CIO**.
